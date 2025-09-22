@@ -15,6 +15,7 @@ public class EnemyAi : MonoBehaviour
 
   [Header("Layers")]
   [SerializeField] private LayerMask _terrainLayer;
+  [SerializeField] private LayerMask _obstructionleMask;
   [SerializeField] private LayerMask _playerLayerMask;
 
   [Header("Patrol Settings")]
@@ -30,6 +31,8 @@ public class EnemyAi : MonoBehaviour
    
   [Header("Detection Settings")]
   [SerializeField] float visionRange = 200f;
+  [Range(0, 360)]
+  [SerializeField] float visionAngle = 90f;
   [SerializeField] float engagementRange = 10f;
 
   private bool isPlayerVisible;
@@ -152,16 +155,49 @@ public class EnemyAi : MonoBehaviour
 
   private void OnDrawGizmosSelected()
   {
-    Gizmos.color = Color.red;
-    Gizmos.DrawWireSphere(transform.position, engagementRange); //Engagement Range
+    if (_PlayerTransform == null) return;
     
-    Gizmos.color = Color.green;
-    Gizmos.DrawWireSphere(transform.position, visionRange);// Vision Range
+      //Vision Cone 
+      Gizmos.color = Color.yellow;
+      Vector3 leftBoundary = Quaternion.Euler(0, -visionAngle / 3, 0) * transform.forward;
+      Vector3 rightBoundary = Quaternion.Euler(0, visionAngle / 3, 0) * transform.forward;
+      Gizmos.DrawRay(transform.position, leftBoundary * visionRange);
+      Gizmos.DrawRay(transform.position, rightBoundary * visionRange);
+
+      //Engagement Cone
+      Gizmos.color = Color.red;
+      Vector3 leftCorner = Quaternion.Euler(0, -visionAngle / 1, 0) * transform.forward;
+      Vector3 rightCorner = Quaternion.Euler(0, visionAngle / 1, 0) * transform.forward;
+      Gizmos.DrawRay(transform.position, leftBoundary * engagementRange);
+      Gizmos.DrawRay(transform.position, rightBoundary * engagementRange);
+      
+      
+    //Gizmos.DrawWireSphere(transform.position, engagementRange); //Engagement Range
+    //Gizmos.DrawWireSphere(transform.position, visionRange);// Vision Range
   }
 
+  //Check spheres to detect player
   private void PlayerDecteted()
   {
-    isPlayerVisible = Physics.CheckSphere(transform.position, visionRange, _playerLayerMask);
+    //Checking if player is in range
+    float _distanceToPlayer = Vector3.Distance(transform.position, _PlayerTransform.position);
+    bool _inRange = _distanceToPlayer <= visionRange;
+    
+    //Adding angle check
+    Vector3 _directionToPlayer = (_PlayerTransform.position - transform.position).normalized;
+    float _angleToPlayer = Vector3.Angle(transform.forward, _directionToPlayer);
+    bool _inVisionCone = _angleToPlayer < visionAngle / 2f;
+
+    if (Physics.Raycast(transform.position, _directionToPlayer, out RaycastHit hit, visionRange))
+    {
+      isPlayerInRange = hit.transform == _PlayerTransform;
+    }
+
+    isPlayerVisible = _inRange && _inVisionCone;
+    
+    //isPlayerVisible = Physics.CheckSphere(transform.position, visionRange, _playerLayerMask);
     isPlayerInRange= Physics.CheckSphere(transform.position, engagementRange, _playerLayerMask);
+    
+ 
   }
 }

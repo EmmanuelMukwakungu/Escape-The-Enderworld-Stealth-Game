@@ -24,8 +24,10 @@ public class InputManager : MonoBehaviour
   
   private float _sprintPower = 10f;
   private float _sprintSpeed = 5f;
-
+  
+  [Header("Inputs")]
   public bool _sprintInput;
+  public bool _crouchInput;
 
 
 
@@ -47,9 +49,12 @@ public class InputManager : MonoBehaviour
               _movementInput = i.ReadValue<Vector2>();
           _playerControls.PlayerMovement.Camera.performed += i =>
               CameraInput = i.ReadValue<Vector2>();
-          
+          //For Sprinting
           _playerControls.PlayerMovement.Sprint.performed += i => _sprintInput = true;
           _playerControls.PlayerMovement.Sprint.canceled += i => _sprintInput = false;
+          //For Crouching
+          _playerControls.PlayerMovement.Crouch.performed += i => _crouchInput = true;
+          _playerControls.PlayerMovement.Crouch.canceled += i => _crouchInput = true;
          
         
           
@@ -95,5 +100,10 @@ public class InputManager : MonoBehaviour
       {
           _playerLocomotion._isSprinting = false;
       }
+  }
+
+  private void HandleCrouchInput()
+  {
+      
   }
 }
