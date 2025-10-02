@@ -12,6 +12,7 @@ public class EnemyAi : MonoBehaviour
   [SerializeField] private Transform _PlayerTransform;
   [SerializeField] private Transform _FireTransform;
   [SerializeField] private GameObject _Projectile;
+  public PlayerHealth playerHP;
 
   [Header("Layers")]
   [SerializeField] private LayerMask _terrainLayer;
@@ -40,6 +41,7 @@ public class EnemyAi : MonoBehaviour
 
   private void Awake()
   {
+    playerHP = GetComponent<PlayerHealth>();
     if (_PlayerTransform == null)
     {
       GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
@@ -200,5 +202,6 @@ public class EnemyAi : MonoBehaviour
     
  
   }
+  
 }
 

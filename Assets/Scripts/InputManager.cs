@@ -28,6 +28,7 @@ public class InputManager : MonoBehaviour
   [Header("Inputs")]
   public bool _sprintInput;
   public bool _crouchInput;
+  public bool _EquipInput;
 
 
 

@@ -25,6 +25,13 @@ public class PlayerHealth : MonoBehaviour
     {
         health = Mathf.Clamp(health, 0, maxHealth);
         UpdateHealthUI();
+        
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            TakeDamge(Random.Range(5,10));
+        }
+        
+        
     }
 
     public void UpdateHealthUI()
@@ -32,7 +39,7 @@ public class PlayerHealth : MonoBehaviour
         float fillFront = FrontHealthBar.fillAmount;
         float fillBack = BackHealthBar.fillAmount;
         float HealthFraction = health / maxHealth;
-        healthText.text = health + "HP";
+        healthText.text = health + " HP";
         
         
         if (fillBack > HealthFraction)
