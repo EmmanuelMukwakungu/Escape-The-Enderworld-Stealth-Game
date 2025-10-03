@@ -54,8 +54,8 @@ public class InputManager : MonoBehaviour
           _playerControls.PlayerMovement.Sprint.performed += i => _sprintInput = true;
           _playerControls.PlayerMovement.Sprint.canceled += i => _sprintInput = false;
           //For Crouching
-          _playerControls.PlayerMovement.Crouch.performed += i => _crouchInput = true;
-          _playerControls.PlayerMovement.Crouch.canceled += i => _crouchInput = true;
+          _playerControls.PlayerMovement.Crouch.performed += i => _crouchInput = !_crouchInput;
+          //_playerControls.PlayerMovement.Crouch.canceled += i => _crouchInput = true;
          
         
           
@@ -74,6 +74,7 @@ public class InputManager : MonoBehaviour
   {
       HandleMovementInput();
       HandleSprintInput();
+      HandleCrouchInput();
   }
 
   private void HandleMovementInput()
@@ -86,7 +87,7 @@ public class InputManager : MonoBehaviour
       cameraInputX = CameraInput.x;
       
       moveAmount = Mathf.Clamp01(Mathf.Abs(_horizontalInput) + Mathf.Abs(_verticalInput));
-      _animatorManager.UpdateAnimatorValues(_horizontalInput, _verticalInput, _playerLocomotion._isSprinting);
+      _animatorManager.UpdateAnimatorValues(_horizontalInput, _verticalInput, _playerLocomotion._isSprinting, _playerLocomotion);
       
   }
 
@@ -105,6 +106,7 @@ public class InputManager : MonoBehaviour
 
   private void HandleCrouchInput()
   {
+      _playerLocomotion._isCrounching = _crouchInput;
       
   }
 }
