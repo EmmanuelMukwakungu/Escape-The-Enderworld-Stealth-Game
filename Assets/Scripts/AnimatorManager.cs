@@ -21,7 +21,7 @@ public class AnimatorManager : MonoBehaviour
 
     }
 
-    public void UpdateAnimatorValues(float HorizontalMovement, float VerticalMovement, bool isSprinting, bool isCrouching)
+    public void UpdateAnimatorValues(float HorizontalMovement, float VerticalMovement, bool isSprinting)
     {
         float snapperHorizontal;
         float snapperVertical;
@@ -61,8 +61,14 @@ public class AnimatorManager : MonoBehaviour
         // ✅ Apply snapped values
         _animator.SetFloat(horizontal, snapperHorizontal, 0.1f, Time.deltaTime);
         _animator.SetFloat(vertical, snapperVertical, 0.1f, Time.deltaTime);
-        _animator.SetBool("isCrouching", isCrouching); 
-      
+       
+        
     }
+    
+    public void UpdateCrouchAnimation(bool isCrouching)
+    {
+        _animator.SetBool("isCrouching", isCrouching);
+    }
+
 
 }

@@ -25,7 +25,7 @@ public class EnemyAi : MonoBehaviour
   private bool hasPatrolPoint;
 
   [Header("Attack Settings")]
-  [SerializeField] private float attackCoolDown = 1f;
+  [SerializeField] private float attackCoolDown = 5f;
   private bool isOnAttackCooldown;
   [SerializeField] private float forwardShotForce = 10f;
   [SerializeField] private float verticalShotForce = 5f;
@@ -142,16 +142,24 @@ public class EnemyAi : MonoBehaviour
 
   private void FindPatrolPoint()
   {
-    float randomX = Random.Range(-_patrolRadius, _patrolRadius);
+    Vector3 randomPoint = transform.position + new Vector3(Random.Range(- _patrolRadius, _patrolRadius), 0, 
+      Random.Range(-_patrolRadius, _patrolRadius));
+
+    if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+    {
+      _currentPatrolPosition = hit.position;
+      hasPatrolPoint = true;
+    }
+    /*float randomX = Random.Range(-_patrolRadius, _patrolRadius);
     float randomZ = Random.Range(-_patrolRadius, _patrolRadius);
-    
+
     Vector3 potentialPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
 
     if (Physics.Raycast(potentialPoint, -transform.up, 2f, _terrainLayer))
     {
       _currentPatrolPosition = potentialPoint;
       hasPatrolPoint = true;
-    }
+    }**/
   }
 
 
@@ -181,6 +189,8 @@ public class EnemyAi : MonoBehaviour
   //Check spheres to detect player
   private void PlayerDecteted()
   {
+    if(_PlayerTransform == null) return;
+    
     //Checking if player is in range
     float _distanceToPlayer = Vector3.Distance(transform.position, _PlayerTransform.position);
     bool _inRange = _distanceToPlayer <= visionRange;
@@ -190,17 +200,25 @@ public class EnemyAi : MonoBehaviour
     float _angleToPlayer = Vector3.Angle(transform.forward, _directionToPlayer);
     bool _inVisionCone = _angleToPlayer < visionAngle / 2f;
 
-    if (Physics.Raycast(transform.position, _directionToPlayer, out RaycastHit hit, visionRange))
+    bool hasLineOfSight = false;
+    if (_inRange && _inVisionCone)
     {
-      isPlayerInRange = hit.transform == _PlayerTransform;
+      if (Physics.Raycast(transform.position + Vector3.up * 1.5f, _directionToPlayer, out RaycastHit hit, visionRange,
+            ~_obstructionleMask))
+      {
+        if (hit.transform == _PlayerTransform)
+        {
+          hasLineOfSight = true;
+        }
+      }
     }
+  
+    isPlayerVisible = _inRange && _inVisionCone && hasLineOfSight;
+   isPlayerInRange = isPlayerVisible && _distanceToPlayer <= engagementRange;
 
-    isPlayerVisible = _inRange && _inVisionCone;
-    
-    //isPlayerVisible = Physics.CheckSphere(transform.position, visionRange, _playerLayerMask);
-    isPlayerInRange= Physics.CheckSphere(transform.position, engagementRange, _playerLayerMask);
-    
- 
+
+
+
   }
   
 }

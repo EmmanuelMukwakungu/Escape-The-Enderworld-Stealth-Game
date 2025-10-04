@@ -17,7 +17,7 @@ public class PlayerLocomotion : MonoBehaviour
    public float _rotationSpeed = 15f;
    
    public bool _isSprinting;
-   public bool _isCrounching;
+   public bool _isCrouching;
    public float _crounchSpeed = 1f;
    
    private void Awake()
@@ -46,7 +46,7 @@ public class PlayerLocomotion : MonoBehaviour
       {
          _moveDirection = _moveDirection * _sprintingSpeed;
       }
-      else if (_isCrounching)
+      else if (_isCrouching)
       {
          _moveDirection = _moveDirection * _crounchSpeed;
       }
@@ -84,5 +84,6 @@ public class PlayerLocomotion : MonoBehaviour
 
       transform.rotation = _playerRotation;
    }
+
    
 }
