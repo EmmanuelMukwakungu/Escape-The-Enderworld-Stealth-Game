@@ -1,6 +1,8 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -9,15 +11,22 @@ public class PlayerHealth : MonoBehaviour
     private float lerpTimer;
     public float chipSpeed = 2f;
     public TextMeshProUGUI healthText;
-
+    private float durationTimer;
+    
     public Image FrontHealthBar;
     public Image BackHealthBar;
 
-    private float durationTimer;
+    private bool isDead = false;
+
+    public GameObject losePanel;
+    public GameObject winPanel;
+    
+    private Animator animator;
 
     void Start()
     {
         health = maxHealth;
+        animator = GetComponent<Animator>();
         
     }
 
@@ -26,7 +35,7 @@ public class PlayerHealth : MonoBehaviour
         health = Mathf.Clamp(health, 0, maxHealth);
         UpdateHealthUI();
         
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.K))
         {
             TakeDamge(Random.Range(5,10));
         }
@@ -62,9 +71,41 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamge(float damage)
     {
+        if (isDead) return;
+        
         health -= damage;
         lerpTimer = 0f;
         durationTimer = 0f;
         
+        if (health <= 0)
+        {
+            health = 0;
+            Die();
+            losePanel.SetActive(true);
+        }
+
     }
+    
+    public void RestoreHealth(float healAmount)
+    {
+        if (health < maxHealth)
+        {
+            health += healAmount;
+            health = Mathf.Clamp(health, 0, maxHealth);
+            lerpTimer = 0f;
+        }
+
+    }
+
+    public void Die()
+    {
+        isDead = true;
+        animator.SetBool("isDead", true);
+        
+        GetComponent<PlayerLocomotion>().enabled = false;
+        GetComponent<InputManager>().enabled = false;
+        
+    }
+
+
 }
